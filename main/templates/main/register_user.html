@@ -1,0 +1,15 @@
+{% extends 'main/base.html' %}
+
+{% block heading %}
+    <title>Register Today!</title>
+{% endblock %}
+
+{% block body %}
+    <form method="post">
+        {% csrf_token %}
+        <input placeholder="Username" type="text" name="username" required>
+        <input placeholder="Password" type="password" name="password" required>
+        <input placeholder="Confirm Password" type="password" name="password2" required>
+        <button type="submit">Register</button>
+    </form>
+{% endblock %}

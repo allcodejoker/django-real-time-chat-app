@@ -1,0 +1,71 @@
+{% extends 'main/base.html' %}
+
+{% block heading %}
+    <title>Chat Room</title>
+{% endblock %}
+
+{% block body %}
+
+    <h2>Chat Room: {{ room.name }}</h2>
+
+    <div id="chat-box" style="border:1px solid black; height: 300px; overflow-y: scroll;">
+        {% for message in messages %}
+            <p><strong>{{ message.user.username }}</strong> ({{ message.date_send|date:"H:i:s" }}): {{ message.context }}</p>
+        {% endfor %}
+    </div>
+
+    <input type="text" id="messageInput" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        let chatSocket;
+    
+        // Function to create and handle the WebSocket connection
+        function createWebSocketConnection() {
+            const roomCode = "{{ room.code }}";
+            chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomCode}/`);
+    
+            chatSocket.onopen = function() {
+                console.log("WebSocket connection established.");
+            };
+    
+            chatSocket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                const chatBox = document.getElementById("chat-box");
+                const newMessage = `<p><strong>${data.username}</strong> (${data.date_send}): ${data.message}</p>`;
+                chatBox.innerHTML += newMessage;
+                chatBox.scrollTop = chatBox.scrollHeight;  // Auto-scroll
+            };
+    
+            chatSocket.onclose = function(event) {
+                console.error("WebSocket closed unexpectedly. Reconnecting...");
+                setTimeout(createWebSocketConnection, 1000);  // Try to reconnect after 1 second
+            };
+    
+            chatSocket.onerror = function(event) {
+                console.error("WebSocket error:", event);
+            };
+        }
+    
+        // Create the WebSocket connection when the page loads
+        window.onload = function() {
+            createWebSocketConnection();
+        };
+    
+        // Function to send messages through WebSocket
+        function sendMessage() {
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value.trim();
+    
+            if (message) {
+                if (chatSocket.readyState === WebSocket.OPEN) {  // Ensure WebSocket is open
+                    chatSocket.send(JSON.stringify({ "username": "{{ user.username }}", "message": message }));
+                    messageInput.value = "";  // Clear input field
+                } else {
+                    console.error("WebSocket is not open. Cannot send message.");
+                }
+            }
+        }
+    </script>
+
+{% endblock %}
