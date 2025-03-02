@@ -64,3 +64,30 @@ def chat_room(request, room_code):
         "room": room,
         "messages": messages
     })
+
+def find_room(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            room_code = request.POST["room_code"]
+
+            return redirect("chat_room", room_code=room_code)
+
+        return render(request, 'main/find_room.html')
+
+    else:
+        return redirect('login')
+
+def create_room(request):
+    if request.user.is_superuser:
+        if request.method == "POST":
+            room_name = request.POST["room_name"]
+            room_code = request.POST["room_code"]
+
+            new_room = Room.objects.create(name=room_name, code=room_code)
+
+            return redirect("chat_room", room_code=new_room.code)
+
+        return render(request, 'main/create_room.html')
+
+    else:
+        return redirect('find_room')

@@ -58,9 +58,17 @@
                     <li class="nav-item">
                         <a class="nav-link text-white fw-bold" href="{% url 'index' %}">Home</a>
                     </li>
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-bold" href="{% url 'create_room' %}">Create Room</a>
+                    </li>
+                    {% endif %}
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link text-white fw-bold" href="{% url 'logout_user' %}">Logout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-bold" href="{% url 'find_room' %}">Find Room</a>
                     </li>
                     {% else %}
                     <li class="nav-item">

@@ -1,0 +1,13 @@
+{% extends 'main/base.html' %}
+
+{% block heading %}
+    <title>Find A Chat Room</title>
+{% endblock %}
+
+{% block body %}
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="room_code">
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}
