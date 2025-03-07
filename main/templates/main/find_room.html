@@ -5,9 +5,12 @@
 {% endblock %}
 
 {% block body %}
-    <form method="post">
-        {% csrf_token %}
-        <input type="text" name="room_code">
-        <button type="submit">Submit</button>
-    </form>
+    <div class="form-container">
+        <h2>Find A Chat Room</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="room_code" placeholder="Enter Room Code">
+            <button type="submit">Join Room</button>
+        </form>
+    </div>
 {% endblock %}

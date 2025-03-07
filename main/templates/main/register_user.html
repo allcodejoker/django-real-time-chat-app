@@ -5,11 +5,14 @@
 {% endblock %}
 
 {% block body %}
-    <form method="post">
-        {% csrf_token %}
-        <input placeholder="Username" type="text" name="username" required>
-        <input placeholder="Password" type="password" name="password" required>
-        <input placeholder="Confirm Password" type="password" name="password2" required>
-        <button type="submit">Register</button>
-    </form>
+    <div class="center-container">
+        <form method="post" class="authentication-form">
+            {% csrf_token %}
+            <h2>Register</h2>
+            <input placeholder="Username" type="text" name="username" required>
+            <input placeholder="Password" type="password" name="password" required>
+            <input placeholder="Confirm Password" type="password" name="password2" required>
+            <button type="submit">Register</button>
+        </form>
+    </div>
 {% endblock %}

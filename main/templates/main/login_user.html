@@ -5,10 +5,13 @@
 {% endblock %}
 
 {% block body %}
-    <form method="post" class="authentication-form">
-        {% csrf_token %}
-        <input placeholder="Username" type="text" name="username" required>
-        <input placeholder="Password" type="password" name="password" required>
-        <button type="submit">Login</button>
-    </form>
+    <div class="center-container">
+        <form method="post" class="authentication-form">
+            {% csrf_token %}
+            <h2>Login</h2>
+            <input placeholder="Username" type="text" name="username" required>
+            <input placeholder="Password" type="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
 {% endblock %}

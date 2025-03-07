@@ -75,7 +75,7 @@ def find_room(request):
         return render(request, 'main/find_room.html')
 
     else:
-        return redirect('login')
+        return redirect('login_user')
 
 def create_room(request):
     if request.user.is_superuser:

@@ -5,67 +5,72 @@
 {% endblock %}
 
 {% block body %}
+<div class="container chat-container">
+    <h2 class="text-center">Chat Room: {{ room.name }}</h2>
 
-    <h2>Chat Room: {{ room.name }}</h2>
-
-    <div id="chat-box" style="border:1px solid black; height: 300px; overflow-y: scroll;">
+    <div id="chat-box">
         {% for message in messages %}
-            <p><strong>{{ message.user.username }}</strong> ({{ message.date_send|date:"H:i:s" }}): {{ message.context }}</p>
+            <p class="chat-message {% if message.user == request.user %}you{% endif %}">
+                <strong>{{ message.user.username }}</strong> ({{ message.date_send|date:"H:i:s" }}): {{ message.context }}
+            </p>
         {% endfor %}
     </div>
 
-    <input type="text" id="messageInput" placeholder="Type your message...">
-    <button onclick="sendMessage()">Send</button>
+    <div class="input-group">
+        <input type="text" id="messageInput" class="form-control" placeholder="Type your message...">
+        <button class="btn btn-send" onclick="sendMessage()">Send</button>
+    </div>
+</div>
 
-    <script>
-        let chatSocket;
+<script>
+    let chatSocket;
     
-        // Function to create and handle the WebSocket connection
-        function createWebSocketConnection() {
-            const roomCode = "{{ room.code }}";
-            chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomCode}/`);
-    
-            chatSocket.onopen = function() {
-                console.log("WebSocket connection established.");
-            };
-    
-            chatSocket.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-                const chatBox = document.getElementById("chat-box");
-                const newMessage = `<p><strong>${data.username}</strong> (${data.date_send}): ${data.message}</p>`;
-                chatBox.innerHTML += newMessage;
-                chatBox.scrollTop = chatBox.scrollHeight;  // Auto-scroll
-            };
-    
-            chatSocket.onclose = function(event) {
-                console.error("WebSocket closed unexpectedly. Reconnecting...");
-                setTimeout(createWebSocketConnection, 1000);  // Try to reconnect after 1 second
-            };
-    
-            chatSocket.onerror = function(event) {
-                console.error("WebSocket error:", event);
-            };
-        }
-    
-        // Create the WebSocket connection when the page loads
-        window.onload = function() {
-            createWebSocketConnection();
+    function createWebSocketConnection() {
+        const roomCode = "{{ room.code }}";
+        chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomCode}/`);
+
+        chatSocket.onopen = function() {
+            console.log("WebSocket connection established.");
         };
-    
-        // Function to send messages through WebSocket
-        function sendMessage() {
-            const messageInput = document.getElementById("messageInput");
-            const message = messageInput.value.trim();
-    
-            if (message) {
-                if (chatSocket.readyState === WebSocket.OPEN) {  // Ensure WebSocket is open
-                    chatSocket.send(JSON.stringify({ "username": "{{ user.username }}", "message": message }));
-                    messageInput.value = "";  // Clear input field
-                } else {
-                    console.error("WebSocket is not open. Cannot send message.");
-                }
+
+        chatSocket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const chatBox = document.getElementById("chat-box");
+            const newMessage = `
+                <p class="chat-message ${data.username === "{{ user.username }}" ? 'you' : ''}">
+                    <strong>${data.username}</strong> (${data.date_send}): ${data.message}
+                </p>`;
+            chatBox.innerHTML += newMessage;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+
+        chatSocket.onclose = function(event) {
+            console.error("WebSocket closed unexpectedly. Reconnecting...");
+            setTimeout(createWebSocketConnection, 1000);
+        };
+
+        chatSocket.onerror = function(event) {
+            console.error("WebSocket error:", event);
+        };
+    }
+
+    window.onload = function() {
+        createWebSocketConnection();
+    };
+
+    function sendMessage() {
+        const messageInput = document.getElementById("messageInput");
+        const message = messageInput.value.trim();
+
+        if (message) {
+            if (chatSocket.readyState === WebSocket.OPEN) {
+                chatSocket.send(JSON.stringify({ "username": "{{ user.username }}", "message": message }));
+                messageInput.value = "";
+            } else {
+                console.error("WebSocket is not open. Cannot send message.");
             }
         }
-    </script>
+    }
+</script>
 
 {% endblock %}

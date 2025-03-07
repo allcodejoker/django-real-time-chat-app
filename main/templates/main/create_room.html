@@ -5,10 +5,13 @@
 {% endblock %}
 
 {% block body %}
-    <form method="post">
-        {% csrf_token %}
-        <input type="text" placeholder="Name" name="room_name">
-        <input type="text" placeholder="Code" name="room_code">
-        <button type="submit">Submit</button>
-    </form>
+    <div class="form-container">
+        <h2>Create A Chat Room</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" placeholder="Room Name" name="room_name">
+            <input type="text" placeholder="Room Code" name="room_code">
+            <button type="submit">Create Room</button>
+        </form>
+    </div>
 {% endblock %}
